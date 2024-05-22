@@ -69,6 +69,26 @@ namespace OneFunction
             Initialize();
         }
 
+        public void UpdateDirect(double[] c, double mu)
+        {
+            for (int i = 0; i < _basisList.Count; i++)
+            {
+                _coefficients[i] += c[i] * mu;
+            }
+        }
+
+        public double[] GetBasicVector(double x)
+        {
+            (int k, double relative) = GetSplineAndRelative(x);
+            List<double> v = new List<double>();
+
+            for (int i = 0; i < _basisList.Count; i++)
+            {
+                v.Add(_basisList[i].GetValue(k, relative));
+            }
+            return v.ToArray();
+        }
+
         public double GetDerrivative(double x)
         {
             FitDefinition(x);
