@@ -1,4 +1,4 @@
-﻿//This is iterative identification of the function represented by values.
+//This is iterative identification of the function represented by values.
 //This method is valid for identification of discrete Urysohn operators and
 //Kolmogorov-Arnold representation.
 //Developed by Andrew Polar and Mike Poluektov.
@@ -7,7 +7,7 @@
 //https://www.sciencedirect.com/science/article/abs/pii/S0952197620303742
 //https://arxiv.org/abs/2305.08194
 
-//Usual execution print out
+//Usual execution print out for Option 1
 //epoch 0, error 0.066522
 //epoch 1, error 0.007795
 //epoch 2, error 0.001350
@@ -20,6 +20,7 @@
 
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace OneFunction
 {
@@ -52,9 +53,13 @@ namespace OneFunction
             double xmax = x.Max();
             double ymin = y.Min();
             double ymax = y.Max();
- 
+            int NPoints = 10;
+            int nRecords = x.Length;
+
             //Identification
-            Univariate uv = new Univariate(xmin, xmax, ymin, ymax, 10);
+            Univariate uv = new Univariate(xmin, xmax, ymin, ymax, NPoints);
+
+            //Option 1: iterative Kaczmarz
             for (int step = 0; step < 8; ++step)
             {
                 double error = 0.0;
@@ -73,6 +78,47 @@ namespace OneFunction
                 Console.WriteLine("epoch {0}, error {1:0.000000}", step, error);
             }
 
+            //Option 2
+            //Make pseudoinverse
+            //double[][] B = new double[nRecords][];
+            //for (int i = 0; i < nRecords; ++i)
+            //{
+            //    double[] b = uv.GetBasicVector(x[i]);
+            //    B[i] = new double[NPoints];
+            //    for (int j = 0; j < NPoints; ++j)
+            //    {
+            //        B[i][j] = b[j];
+            //    }
+            //}
+            //double[][] P = Helper.PseudoInverse(B);
+
+            ////Build residual vector
+            //double residual_error = 0.0;
+            //double[] residual = new double[nRecords];
+            //for (int i = 0; i < nRecords; ++i)
+            //{
+            //    double m = uv.GetFunctionValue(x[i]);
+            //    double diff = Function(x[i]) - m;
+            //    residual[i] = diff;
+            //    residual_error += diff * diff;
+            //}
+            //residual_error /= nRecords;
+            //residual_error = Math.Sqrt(residual_error);
+            //residual_error /= (ymax - ymin);
+            //Console.WriteLine("Relative error for initial approximation {0:0.0000}", residual_error);
+
+            ////Update coefficients
+            //double[] C = new double[NPoints];
+            //for (int i = 0; i < NPoints; ++i)
+            //{
+            //    C[i] = 0.0;
+            //    for (int j = 0; j < nRecords; ++j)
+            //    {
+            //        C[i] += P[j][i] * residual[j];
+            //    }
+            //}
+            //uv.UpdateDirect(C, 1.0);
+
             //Validation
             (double[] x_test, double[] y_test) = GetSample(100, 0.5, 1.5);
             double error_test = 0.0;
@@ -87,7 +133,7 @@ namespace OneFunction
             error_test /= cnt_test;
             error_test = Math.Sqrt(error_test);
             error_test /= (ymax - ymin);
-            Console.WriteLine("Relative error for unseen data {0:0.000000}", error_test);
+            Console.WriteLine("Relative error for unseen data after identification {0:0.000000}", error_test);
         }
     }
 }
