@@ -53,11 +53,10 @@ namespace OneFunction
             double xmax = x.Max();
             double ymin = y.Min();
             double ymax = y.Max();
-            int NPoints = 10;
             int nRecords = x.Length;
 
             //Identification
-            Univariate uv = new Univariate(xmin, xmax, ymin, ymax, NPoints);
+            Univariate uv = new Univariate(xmin, xmax, ymin, ymax, 10);
 
             //Option 1: iterative Kaczmarz
             for (int step = 0; step < 8; ++step)
@@ -79,20 +78,7 @@ namespace OneFunction
             }
 
             //Option 2
-            //Make pseudoinverse
-            //double[][] B = new double[nRecords][];
-            //for (int i = 0; i < nRecords; ++i)
-            //{
-            //    double[] b = uv.GetBasicVector(x[i]);
-            //    B[i] = new double[NPoints];
-            //    for (int j = 0; j < NPoints; ++j)
-            //    {
-            //        B[i][j] = b[j];
-            //    }
-            //}
-            //double[][] P = Helper.PseudoInverse(B);
-
-            ////Build residual vector
+            //Build residual vector
             //double residual_error = 0.0;
             //double[] residual = new double[nRecords];
             //for (int i = 0; i < nRecords; ++i)
@@ -107,17 +93,7 @@ namespace OneFunction
             //residual_error /= (ymax - ymin);
             //Console.WriteLine("Relative error for initial approximation {0:0.0000}", residual_error);
 
-            ////Update coefficients
-            //double[] C = new double[NPoints];
-            //for (int i = 0; i < NPoints; ++i)
-            //{
-            //    C[i] = 0.0;
-            //    for (int j = 0; j < nRecords; ++j)
-            //    {
-            //        C[i] += P[j][i] * residual[j];
-            //    }
-            //}
-            //uv.UpdateDirect(C, 1.0);
+            //uv.UpdateModelByResidual(residual, x);
 
             //Validation
             (double[] x_test, double[] y_test) = GetSample(100, 0.5, 1.5);
