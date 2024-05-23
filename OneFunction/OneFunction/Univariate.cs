@@ -69,6 +69,35 @@ namespace OneFunction
             Initialize();
         }
 
+        public void UpdateModelByResidual(double[] residual, double[] x)
+        {
+            //Make pseudoinverse
+            int nRecords = residual.Length;
+            double[][] B = new double[nRecords][];
+            for (int i = 0; i < nRecords; ++i)
+            {
+                double[] b = GetBasicVector(x[i]);
+                B[i] = new double[_points];
+                for (int j = 0; j < _points; ++j)
+                {
+                    B[i][j] = b[j];
+                }
+            }
+            double[][] P = Helper.PseudoInverse(B);
+
+            //Update coefficients
+            double[] C = new double[_points];
+            for (int i = 0; i < _points; ++i)
+            {
+                C[i] = 0.0;
+                for (int j = 0; j < nRecords; ++j)
+                {
+                    C[i] += P[j][i] * residual[j];
+                }
+            }
+            UpdateDirect(C, 1.0);
+        }
+
         public void UpdateDirect(double[] c, double mu)
         {
             for (int i = 0; i < _basisList.Count; i++)
